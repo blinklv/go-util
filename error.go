@@ -5,6 +5,7 @@
 // Maintainer: blinklv <blinklv@icloud.com>
 // Last Change: 2020-04-30
 
+// Package package contains some utility functions and types.
 package util
 
 import (
@@ -27,7 +28,9 @@ func (e *Error) Raw() error {
 	return e.error
 }
 
-// Errorf lets us use formatting features to create a util.Error instance.
+// Errorf formats according to a format specifier and returns the string as
+// a value that satisfies error. Cause the underlying type of the error is
+// *util.Error, you need to specify the error code (first parameter).
 func Errorf(code int, format string, args ...interface{}) error {
 	return &Error{fmt.Errorf(format, args...), code}
 }
