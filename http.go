@@ -16,7 +16,7 @@ import (
 // GetClientIP gets the client ip from a http request. The implementation
 // of this function based on some special HTTP headers, so it has security
 // implications. Do NOT use this function unless there exists a trusted
-// reverse proxy.
+// reverse proxy. The returned string might be empty or an illegal IP.
 func GetClientIP(r *http.Request) string {
 	// Extracts client ip from X-Forwarded-For header at first.
 	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
@@ -30,7 +30,11 @@ func GetClientIP(r *http.Request) string {
 		}
 	}
 
-	// Gets the client ip from RemoteAddr field by default.
-	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
-	return ip
+	// RemoteAddr field will be set to an 'ip:port' address in most cases.
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err == nil {
+		return ip
+	}
+
+	return r.RemoteAddr
 }

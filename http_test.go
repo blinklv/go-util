@@ -40,6 +40,14 @@ func TestGetClientIP(t *testing.T) {
 			r:  &http.Request{RemoteAddr: "183.91.1.19:80"},
 			IP: "183.91.1.19",
 		},
+		{
+			r:  &http.Request{RemoteAddr: "183.91.1.19"},
+			IP: "183.91.1.19",
+		},
+		{
+			r:  &http.Request{RemoteAddr: "Foo, Bar"},
+			IP: "Foo, Bar",
+		},
 	} {
 		t.Run(encodeCase(cs), func(t *testing.T) {
 			assert.Equal(t, cs.IP, GetClientIP(cs.r))
