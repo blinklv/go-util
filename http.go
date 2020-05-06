@@ -30,12 +30,6 @@ func GetClientIP(r *http.Request) string {
 		}
 	}
 
-	// If X-Forwarded-For header is empty, we try to get the
-	// client ip from X-Client-IP header.
-	if ip := r.Header.Get("X-Client-IP"); ip != "" {
-		return ip
-	}
-
 	// Gets the client ip from RemoteAddr field by default.
 	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
 	return ip
