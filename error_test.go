@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-04-30
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-04-30
+// Last Change: 2020-05-06
 
 package util
 
@@ -49,8 +49,11 @@ func encodeCase(cs interface{}) string {
 	)
 
 	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		strs = append(strs, fmt.Sprintf("%s=%v", f.Tag.Get("json"), v.Field(i).Interface()))
+		ft, fv := t.Field(i), v.Field(i)
+		// PkgPath is empty for upper case (exported) field names.
+		if ft.PkgPath == "" {
+			strs = append(strs, fmt.Sprintf("%s=%v", ft.Tag.Get("json"), fv.Interface()))
+		}
 	}
 
 	return strings.Join(strs, ";")
