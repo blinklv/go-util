@@ -22,3 +22,14 @@ func ToJson(v interface{}) []byte {
 	enc.Encode(v)
 	return b.Bytes()
 }
+
+// ToPrettyJson returns the pretty-print JSON encoding of v. It also
+// won't escape special characters and doesn't return error.
+func ToPrettyJson(v interface{}) []byte {
+	b := &bytes.Buffer{}
+	enc := json.NewEncoder(b)
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "\t")
+	enc.Encode(v)
+	return b.Bytes()
+}
