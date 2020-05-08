@@ -16,20 +16,35 @@ import (
 // it won't escape special characters (&, <, and >) in quoted strings
 // to avoid certain safety problems, and doesn't return error.
 func ToJson(v interface{}) []byte {
-	b := &bytes.Buffer{}
-	enc := json.NewEncoder(b)
-	enc.SetEscapeHTML(false)
-	enc.Encode(v)
-	return b.Bytes()
+	return toJson(v, false, "")
 }
 
 // ToPrettyJson returns the pretty-print JSON encoding of v. It also
 // won't escape special characters and doesn't return error.
 func ToPrettyJson(v interface{}) []byte {
-	b := &bytes.Buffer{}
-	enc := json.NewEncoder(b)
-	enc.SetEscapeHTML(false)
-	enc.SetIndent("", "\t")
-	enc.Encode(v)
-	return b.Bytes()
+	return toJson(v, false, "\t")
+}
+
+// toJson is the underlying implementation of ToJson and ToPrettyJson.
+func toJson(v interface{}, escape bool, indent string) []byte {
+	var (
+		buf = &bytes.Buffer{}
+		enc = json.NewEncoder(buf)
+	)
+
+	enc.SetEscapeHTML(escape)
+	enc.SetIndent("", indent)
+
+	if err := enc.Encode(v); err != nil {
+		return nil
+	}
+
+	b := buf.Bytes()
+	if last := len(b) - 1; len(b) > 0 && b[last] == '\n' {
+		// json.Encoder.Encode will add a newline character at the
+		// end, so we need to remove it make this function consistent
+		// with json.Marshal.
+		return b[:last]
+	}
+	return b
 }
