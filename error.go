@@ -23,8 +23,8 @@ type Error struct {
 	Code int
 }
 
-// Raw returns the underlying raw error.
-func (e *Error) Raw() error {
+// Unwrap returns the underlying raw error.
+func (e *Error) Unwrap() error {
 	return e.error
 }
 

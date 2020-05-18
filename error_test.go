@@ -3,11 +3,12 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-04-30
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-05-06
+// Last Change: 2020-05-18
 
 package util
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -36,7 +37,7 @@ func TestErrorf(t *testing.T) {
 			assert.True(t, ok)
 			assert.Equal(t, expectedErrMsg, fmt.Sprintf("%s", err))
 			assert.Equal(t, cs.Code, err.Code)
-			assert.Equal(t, expectedErrMsg, fmt.Sprintf("%s", err.Raw()))
+			assert.Equal(t, expectedErrMsg, fmt.Sprintf("%s", errors.Unwrap(err)))
 		})
 	}
 }
