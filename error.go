@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-04-30
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-04-30
+// Last Change: 2020-05-18
 
 // Package package contains some utility functions and types.
 package util
@@ -33,4 +33,10 @@ func (e *Error) Raw() error {
 // *util.Error, you need to specify the error code (first parameter).
 func Errorf(code int, format string, args ...interface{}) error {
 	return &Error{fmt.Errorf(format, args...), code}
+}
+
+// WrapError wraps the raw error with an additional error code. The underlying
+// type of the returned error is *util.Error.
+func WrapError(code int, err error) error {
+	return &Error{err, code}
 }
