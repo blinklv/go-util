@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-06-03
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-06-03
+// Last Change: 2020-06-04
 
 package util
 
@@ -24,6 +24,10 @@ type Group struct {
 func (g *Group) Go(f func() interface{}) {
 	g.wg.Add(1)
 	go func() {
+		// We need to place Done operation at here instead of the end
+		// of this anonymous function, cause the
+		defer g.wg.Done()
+
 		if res := f(); res != nil {
 			// Only when the return value of the function is not nil, the
 			// value will be added to the collection of results.
@@ -31,7 +35,6 @@ func (g *Group) Go(f func() interface{}) {
 			g.result = append(g.result, res)
 			g.locker.Unlock()
 		}
-		g.wg.Done()
 	}()
 }
 
