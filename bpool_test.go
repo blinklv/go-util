@@ -43,9 +43,9 @@ func TestBufferPool(t *testing.T) {
 	assert.Nil(t, g.Result())
 }
 
-func TestBytePool(t *testing.T) {
+func TestBytesPool(t *testing.T) {
 	var (
-		bp httputil.BufferPool = NewBytePool(4096)
+		bp httputil.BufferPool = NewBytesPool(4096)
 		g                      = &Group{}
 	)
 
