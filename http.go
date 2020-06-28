@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-05-06
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-05-06
+// Last Change: 2020-06-28
 
 package util
 
@@ -37,4 +37,39 @@ func GetClientIP(r *http.Request) string {
 	}
 
 	return r.RemoteAddr
+}
+
+// AddCookie adds a cookie to the HTTP request.  AddCookie does not attach
+// more than one Cookie header field. That means all cookies, if any, are
+// written into the same line, separated by semicolon.
+func AddCookie(r *http.Request, name, value string) {
+	r.AddCookie(&http.Cookie{Name: name, Value: value})
+}
+
+// GetCookie gets the value of a cookie. If the named cookie is not
+// found, returns an empty string. If multiple cookies match the given
+// name, only one cookie value will be returned.
+func GetCookie(r *http.Request, name string) string {
+	if cookie, err := r.Cookie(name); err == nil {
+		return cookie.Value
+	}
+	return ""
+}
+
+// DelCookie deletes the cookies associated with the given name from the
+// HTTP request's Cookie header.
+func DelCookie(r *http.Request, name string) {
+	var cookies []string
+	for _, cookie := range r.Cookies() {
+		if cookie.Name != name {
+			cookies = append(cookies, cookie.String())
+		}
+	}
+
+	if len(cookies) != 0 {
+		r.Header.Set("Cookie", strings.Join(cookies, ";"))
+	} else {
+		// No cookies reserved now, so delete Cookie header directly.
+		r.Header.Del("Cookie")
+	}
 }
