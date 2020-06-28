@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-05-06
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-05-06
+// Last Change: 2020-06-28
 
 package util
 
@@ -52,5 +52,24 @@ func TestGetClientIP(t *testing.T) {
 		t.Run(encodeCase(cs), func(t *testing.T) {
 			assert.Equal(t, cs.IP, GetClientIP(cs.r))
 		})
+	}
+}
+
+func TestDelCookie(t *testing.T) {
+	for _, cs := range []struct {
+		OldCookie string `yaml:"old_cookie"`
+		DeleteKey string `yaml:"delete_key"`
+		NewCookie string `yaml:"new_cookie"`
+	}{
+		{"", "foo", ""},
+		{"a=b", "a", ""},
+		{"a=b", "b", "a=b"},
+		{"a=b;c=d;hello=world;foo=bar", "hello", "a=b;c=d;foo=bar"},
+		{"a=b;foo=bar;c=d;hello=world;foo=bar;x=y", "foo", "a=b;c=d;hello=world;x=y"},
+	} {
+		r := &http.Request{Header: make(http.Header)}
+		r.Header.Set("Cookie", cs.OldCookie)
+		DelCookie(r, cs.DeleteKey)
+		assert.Equal(t, cs.NewCookie, r.Header.Get("Cookie"))
 	}
 }
