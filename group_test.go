@@ -3,11 +3,12 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-06-04
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-06-04
+// Last Change: 2020-08-06
 
 package util
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -56,7 +57,7 @@ func TestGroup(t *testing.T) {
 	// 3. Check whether the result has been cleared.
 	assert.True(t, g.Result() == nil)
 
-	// 4. Check panic case.
+	// 4. Check panic case 1.
 	var panicStr string
 	g.Go(func() interface{} {
 		defer func() {
@@ -71,4 +72,15 @@ func TestGroup(t *testing.T) {
 
 	assert.True(t, g.Result() == nil)
 	assert.Equal(t, "bar", panicStr)
+
+	// 5. Check panic case 2.
+	g.Go(func() interface{} {
+		panic(errors.New("Hello, Boy!"))
+		return "bar"
+	})
+
+	res := g.Result()
+	e, ok := res[0].(error)
+	assert.True(t, ok)
+	assert.EqualError(t, e, "Hello, Boy!")
 }
