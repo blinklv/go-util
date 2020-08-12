@@ -3,11 +3,15 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-06-03
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-08-06
+// Last Change: 2020-08-12
 
 package util
 
-import "sync"
+import (
+	"errors"
+	"fmt"
+	"sync"
+)
 
 // Group is a collection of goroutines which usually run simultaneously.
 type Group struct {
@@ -26,7 +30,7 @@ func (g *Group) Go(f func() interface{}) {
 	go func() {
 		defer func() {
 			if x := recover(); x != nil {
-				g.result = append(g.result, x)
+				g.result = append(g.result, fmt.Errorf("%v", x))
 			}
 
 			// We need to place Done operation at here instead of the end
@@ -59,4 +63,34 @@ func (g *Group) Result() []interface{} {
 	g.result = nil // Clear results.
 	g.locker.Unlock()
 	return result
+}
+
+// Error calls Result method at first, which means results will be cleared.
+// Then it will extract all error results (the underlying type is error)
+// and merge them into a single error. The message of the returned error is
+// formatted by the ErrorFormatter argument, if you don't specify it (pass nil),
+// ListErrorFormatter will be used. If there is no any error result, returns nil.
+// In fact, if there are different types of return values, I don't recommend
+// you use this method, cause it will ignore some non-error values.
+func (g *Group) Error(ef ErrorFormatter) error {
+	res := g.Result()
+	if res == nil {
+		return nil
+	}
+
+	es := make([]error, 0, len(res))
+	for _, x := range res {
+		if e, ok := x.(error); ok {
+			es = append(es, e)
+		}
+	}
+
+	if len(es) == 0 {
+		return nil
+	}
+
+	if ef == nil {
+		ef = ListErrorFormatter
+	}
+	return errors.New(ef(es))
 }
