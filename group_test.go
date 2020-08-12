@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-06-04
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-08-06
+// Last Change: 2020-08-12
 
 package util
 
@@ -83,4 +83,52 @@ func TestGroup(t *testing.T) {
 	e, ok := res[0].(error)
 	assert.True(t, ok)
 	assert.EqualError(t, e, "Hello, Boy!")
+
+	// 6. Check panic case 3.
+	g.Go(func() interface{} {
+		panic("Hi!")
+		return nil
+	})
+	res = g.Result()
+	e, ok = res[0].(error)
+	assert.True(t, ok)
+	assert.EqualError(t, e, "Hi!")
+
+	// 7. Check Error method case 1.
+	g.Go(func() interface{} {
+		panic("error A")
+		return nil
+	})
+	g.Go(func() interface{} {
+		return errors.New("error B")
+	})
+	g.Go(func() interface{} {
+		return 10
+	})
+	g.Go(func() interface{} {
+		return "error C"
+	})
+	g.Go(func() interface{} {
+		return nil
+	})
+
+	e = g.Error(nil)
+	t.Logf("%s", e)
+	assert.Error(t, e)
+	assert.Nil(t, g.Result())
+
+	// 7. Check Error method case 2.
+	g.Go(func() interface{} {
+		return nil
+	})
+	g.Go(func() interface{} {
+		return 10
+	})
+	g.Go(func() interface{} {
+		return "error A"
+	})
+
+	e = g.Error(nil)
+	assert.NoError(t, e)
+	assert.Nil(t, g.Result())
 }
