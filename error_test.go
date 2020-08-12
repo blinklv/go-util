@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-04-30
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-05-18
+// Last Change: 2020-08-12
 
 package util
 
@@ -39,6 +39,108 @@ func TestErrorf(t *testing.T) {
 			assert.Equal(t, cs.Code, err.Code)
 			assert.Equal(t, expectedErrMsg, fmt.Sprintf("%s", errors.Unwrap(err)))
 		})
+	}
+}
+
+func TestListErrorFormatter(t *testing.T) {
+	for _, cs := range []struct {
+		Errors []error `json:"errors"`
+		Str    string  `json:"str"`
+	}{
+		{nil, "<nil>"},
+		{[]error{}, "<nil>"},
+		{[]error{errors.New("foo")}, "foo"},
+		{
+			[]error{
+				errors.New("hello"),
+				errors.New("world"),
+			},
+			`multiple (2) errors:
+   1. hello
+   2. world`,
+		},
+		{
+			[]error{
+				errors.New("aaaaa"),
+				errors.New("bbbbb"),
+				errors.New("ccccc"),
+				errors.New("ddddd"),
+				errors.New("eeeee"),
+				errors.New("fffff"),
+				errors.New("ggggg"),
+				errors.New("hhhhh"),
+				errors.New("iiiii"),
+				errors.New("jjjjj"),
+				errors.New("kkkkk"),
+				errors.New("lllll"),
+				errors.New("mmmmm"),
+				errors.New("nnnnn"),
+				errors.New("ooooo"),
+				errors.New("ppppp"),
+			},
+			`multiple (16) errors:
+   1. aaaaa
+   2. bbbbb
+   3. ccccc
+   4. ddddd
+   5. eeeee
+   6. fffff
+   7. ggggg
+   8. hhhhh
+   9. iiiii
+  10. jjjjj
+  11. kkkkk
+  12. lllll
+  13. mmmmm
+  14. nnnnn
+  15. ooooo
+  16. ppppp`,
+		},
+		{
+			[]error{
+				errors.New("aaaaa"),
+				errors.New("bbbbb"),
+				errors.New("ccccc"),
+				errors.New("ddddd"),
+				errors.New("eeeee"),
+				errors.New("fffff"),
+				errors.New("ggggg"),
+				errors.New("hhhhh"),
+				errors.New("iiiii"),
+				errors.New("jjjjj"),
+				errors.New("kkkkk"),
+				errors.New("lllll"),
+				errors.New("mmmmm"),
+				errors.New("nnnnn"),
+				errors.New("ooooo"),
+				errors.New("ppppp"),
+				errors.New("qqqqq"),
+				errors.New("rrrrr"),
+				errors.New("sssss"),
+			},
+			`multiple (19) errors:
+   1. aaaaa
+   2. bbbbb
+   3. ccccc
+   4. ddddd
+   5. eeeee
+   6. fffff
+   7. ggggg
+   8. hhhhh
+   9. iiiii
+  10. jjjjj
+  11. kkkkk
+  12. lllll
+  13. mmmmm
+  14. nnnnn
+  15. ooooo
+  16. ppppp
+      ...`,
+		},
+	} {
+		str := ListErrorFormatter(cs.Errors)
+		t.Logf("str: %s", str)
+		assert.Equal(t, cs.Str, str)
 	}
 }
 
