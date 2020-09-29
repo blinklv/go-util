@@ -3,13 +3,15 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-06-03
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-08-12
+// Last Change: 2020-09-29
 
 package util
 
 import (
 	"errors"
 	"fmt"
+	"log"
+	"runtime/debug"
 	"sync"
 )
 
@@ -18,6 +20,10 @@ type Group struct {
 	wg     sync.WaitGroup
 	locker sync.Mutex
 	result []interface{}
+
+	// Logger specifies an optional logger for unexpected behaviors, which
+	// lead to panic, from callback functions.
+	Logger *log.Logger
 }
 
 // Go method is similar to 'go' statement which starts the execution of
@@ -31,6 +37,9 @@ func (g *Group) Go(f func() interface{}) {
 		defer func() {
 			if x := recover(); x != nil {
 				g.result = append(g.result, fmt.Errorf("%v", x))
+				if g.Logger != nil {
+					g.Logger.Printf("panic: %v\n%s", x, debug.Stack())
+				}
 			}
 
 			// We need to place Done operation at here instead of the end

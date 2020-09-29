@@ -3,13 +3,15 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-06-04
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-08-12
+// Last Change: 2020-09-29
 
 package util
 
 import (
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -85,6 +87,7 @@ func TestGroup(t *testing.T) {
 	assert.EqualError(t, e, "Hello, Boy!")
 
 	// 6. Check panic case 3.
+	g = &Group{Logger: log.New(os.Stderr, "", log.LstdFlags)}
 	g.Go(func() interface{} {
 		panic("Hi!")
 		return nil
