@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-04-30
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-08-12
+// Last Change: 2020-10-14
 
 package util
 
@@ -32,6 +32,7 @@ func TestErrorf(t *testing.T) {
 			t.Logf("%s", e)
 
 			err, ok := e.(*Error)
+			t.Logf("%s (%s:%d %s)", err, err.File, err.Line, err.Func)
 			expectedErrMsg := fmt.Sprintf(cs.Format, cs.Args...)
 			assert.Equal(t, expectedErrMsg, fmt.Sprintf("%s", e))
 			assert.True(t, ok)
