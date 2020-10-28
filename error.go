@@ -105,5 +105,15 @@ func ListErrorFormatter(es []error) error {
 // CommaErrorFormatter outputs errors separated by a comma. If there is only
 // one error, returns the error itself.
 func CommaErrorFormatter(es []error) error {
-	return nil
+	if len(es) == 0 {
+		return nil
+	} else if len(es) == 1 {
+		return es[0]
+	}
+
+	strs := make([]string, 0, len(es))
+	for _, e := range es {
+		strs = append(strs, e.Error())
+	}
+	return errors.New(strings.Join(strs, ","))
 }

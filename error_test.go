@@ -145,6 +145,40 @@ func TestListErrorFormatter(t *testing.T) {
 	}
 }
 
+func TestCommaErrorfFormatter(t *testing.T) {
+	for _, cs := range []struct {
+		Errors []error `json:"errors"`
+		Error  error   `json:"err"`
+	}{
+		{nil, nil},
+		{[]error{}, nil},
+		{[]error{errors.New("foo")}, errors.New("foo")},
+		{
+			[]error{
+				errors.New("hello"),
+				errors.New("world"),
+			},
+			errors.New("hello,world"),
+		},
+		{
+			[]error{
+				errors.New("aaaaa"),
+				errors.New("bbbbb"),
+				errors.New("ccccc"),
+				errors.New("ddddd"),
+				errors.New("eeeee"),
+				errors.New("fffff"),
+				errors.New("ggggg"),
+			},
+			errors.New("aaaaa,bbbbb,ccccc,ddddd,eeeee,fffff,ggggg"),
+		},
+	} {
+		err := CommaErrorFormatter(cs.Errors)
+		t.Logf("err: %s", err)
+		assert.Equal(t, cs.Error, err)
+	}
+}
+
 func encodeCase(cs interface{}) string {
 	var (
 		strs []string
