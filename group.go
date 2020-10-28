@@ -3,12 +3,11 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-06-03
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-09-29
+// Last Change: 2020-10-28
 
 package util
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"runtime/debug"
@@ -101,5 +100,5 @@ func (g *Group) Error(ef ErrorFormatter) error {
 	if ef == nil {
 		ef = ListErrorFormatter
 	}
-	return errors.New(ef(es))
+	return ef(es)
 }

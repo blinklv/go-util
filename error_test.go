@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-04-30
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-10-14
+// Last Change: 2020-10-28
 
 package util
 
@@ -46,19 +46,19 @@ func TestErrorf(t *testing.T) {
 func TestListErrorFormatter(t *testing.T) {
 	for _, cs := range []struct {
 		Errors []error `json:"errors"`
-		Str    string  `json:"str"`
+		Error  error   `json:"err"`
 	}{
-		{nil, "<nil>"},
-		{[]error{}, "<nil>"},
-		{[]error{errors.New("foo")}, "foo"},
+		{nil, nil},
+		{[]error{}, nil},
+		{[]error{errors.New("foo")}, errors.New("foo")},
 		{
 			[]error{
 				errors.New("hello"),
 				errors.New("world"),
 			},
-			`multiple (2) errors:
+			errors.New(`multiple (2) errors:
    1. hello
-   2. world`,
+   2. world`),
 		},
 		{
 			[]error{
@@ -79,7 +79,7 @@ func TestListErrorFormatter(t *testing.T) {
 				errors.New("ooooo"),
 				errors.New("ppppp"),
 			},
-			`multiple (16) errors:
+			errors.New(`multiple (16) errors:
    1. aaaaa
    2. bbbbb
    3. ccccc
@@ -95,7 +95,7 @@ func TestListErrorFormatter(t *testing.T) {
   13. mmmmm
   14. nnnnn
   15. ooooo
-  16. ppppp`,
+  16. ppppp`),
 		},
 		{
 			[]error{
@@ -119,7 +119,7 @@ func TestListErrorFormatter(t *testing.T) {
 				errors.New("rrrrr"),
 				errors.New("sssss"),
 			},
-			`multiple (19) errors:
+			errors.New(`multiple (19) errors:
    1. aaaaa
    2. bbbbb
    3. ccccc
@@ -136,12 +136,12 @@ func TestListErrorFormatter(t *testing.T) {
   14. nnnnn
   15. ooooo
   16. ppppp
-      ...`,
+      ...`),
 		},
 	} {
-		str := ListErrorFormatter(cs.Errors)
-		t.Logf("str: %s", str)
-		assert.Equal(t, cs.Str, str)
+		err := ListErrorFormatter(cs.Errors)
+		t.Logf("err: %s", err)
+		assert.Equal(t, cs.Error, err)
 	}
 }
 

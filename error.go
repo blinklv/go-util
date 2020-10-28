@@ -3,12 +3,13 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-04-30
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-10-14
+// Last Change: 2020-10-28
 
 // Package package contains some utility functions and types.
 package util
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"runtime"
@@ -69,17 +70,17 @@ func WrapError(code int, err error) error {
 	}
 }
 
-// ErrorFormatter specifies an interface that can convert the list of errors into a string.
-type ErrorFormatter func([]error) string
+// ErrorFormatter specifies an interface that can convert the list of errors into an error.
+type ErrorFormatter func([]error) error
 
 // ListErrorFormatter is a basic formatter that outputs the number of errors
 // in the form of a list. If there is only one error, returns the error itself.
 // If there're more than 16 errors, the remaining errors are indicated by ellipsis.
-func ListErrorFormatter(es []error) string {
+func ListErrorFormatter(es []error) error {
 	if len(es) == 0 {
-		return "<nil>"
+		return nil
 	} else if len(es) == 1 {
-		return es[0].Error()
+		return es[0]
 	}
 
 	var b strings.Builder
@@ -98,5 +99,11 @@ func ListErrorFormatter(es []error) string {
 		b.WriteString(fmt.Sprintf("%4d. %s", i+1, e))
 	}
 
-	return b.String()
+	return errors.New(b.String())
+}
+
+// CommaErrorFormatter outputs errors separated by a comma. If there is only
+// one error, returns the error itself.
+func CommaErrorFormatter(es []error) error {
+	return nil
 }
