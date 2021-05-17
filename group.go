@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-06-03
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-10-28
+// Last Change: 2021-05-17
 
 package util
 
@@ -76,11 +76,12 @@ func (g *Group) Result() []interface{} {
 // Error calls Result method at first, which means results will be cleared.
 // Then it will extract all error results (the underlying type is error)
 // and merge them into a single error. The message of the returned error is
-// formatted by the ErrorFormatter argument, if you don't specify it (pass nil),
-// ListErrorFormatter will be used. If there is no any error result, returns nil.
-// In fact, if there are different types of return values, I don't recommend
-// you use this method, cause it will ignore some non-error values.
-func (g *Group) Error(ef ErrorFormatter) error {
+// formatted by the first argument, the type of which should be ErrorFormatter.
+// If you don't specify it or pass nil, ListErrorFormatter will be used. If
+// there is no any error result, returns nil.  In fact, if there are different
+// types of return values, I don't recommend you use this method, cause it will
+// ignore some non-error values.
+func (g *Group) Error(args ...interface{}) error {
 	res := g.Result()
 	if res == nil {
 		return nil
@@ -97,8 +98,12 @@ func (g *Group) Error(ef ErrorFormatter) error {
 		return nil
 	}
 
-	if ef == nil {
-		ef = ListErrorFormatter
+	ef := ListErrorFormatter
+	if len(args) > 0 {
+		if v, ok := args[0].(ErrorFormatter); ok {
+			ef = v
+		}
 	}
+
 	return ef(es)
 }

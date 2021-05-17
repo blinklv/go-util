@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-06-04
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-09-29
+// Last Change: 2021-05-17
 
 package util
 
@@ -115,7 +115,7 @@ func TestGroup(t *testing.T) {
 		return nil
 	})
 
-	e = g.Error(nil)
+	e = g.Error()
 	t.Logf("%s", e)
 	assert.Error(t, e)
 	assert.Nil(t, g.Result())
