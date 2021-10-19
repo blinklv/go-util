@@ -3,13 +3,14 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-05-06
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-06-28
+// Last Change: 2021-10-19
 
 package util
 
 import (
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -72,4 +73,21 @@ func DelCookie(r *http.Request, name string) {
 		// No cookies reserved now, so delete Cookie header directly.
 		r.Header.Del("Cookie")
 	}
+}
+
+// SetURLQuery injects query parameters into the URL and returns the modified one.
+// If some query paramenters already exist, they will be updated.
+func SetURLQuery(URL string, query map[string]string) string {
+	// If the url arguments is invalid, returns it.
+	u, err := url.Parse(URL)
+	if err != nil {
+		return URL
+	}
+
+	q := u.Query()
+	for k, v := range query {
+		q.Set(k, v)
+	}
+	u.RawQuery = q.Encode()
+	return u.String()
 }

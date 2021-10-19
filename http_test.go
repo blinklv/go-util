@@ -3,7 +3,7 @@
 // Author: blinklv <blinklv@icloud.com>
 // Create Time: 2020-05-06
 // Maintainer: blinklv <blinklv@icloud.com>
-// Last Change: 2020-06-28
+// Last Change: 2021-10-19
 
 package util
 
@@ -71,5 +71,33 @@ func TestDelCookie(t *testing.T) {
 		r.Header.Set("Cookie", cs.OldCookie)
 		DelCookie(r, cs.DeleteKey)
 		assert.Equal(t, cs.NewCookie, r.Header.Get("Cookie"))
+	}
+}
+
+func TestSetURLQuery(t *testing.T) {
+	for _, ts := range []struct {
+		URL      string
+		Query    map[string]string
+		FinalURL string
+	}{
+		{"https::////foo.bar.com", nil, "https::////foo.bar.com"},
+		{
+			"https://foo.bar.example",
+			map[string]string{
+				"foo": "bar",
+			},
+			"https://foo.bar.example?foo=bar",
+		},
+		{
+			"https://foo.bar.example?foo=hello",
+			map[string]string{
+				"foo": "bar",
+			},
+			"https://foo.bar.example?foo=bar",
+		},
+	} {
+		query := SetURLQuery(ts.URL, ts.Query)
+		t.Logf("query: %s", query)
+		assert.Equal(t, ts.FinalURL, query)
 	}
 }
