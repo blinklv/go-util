@@ -80,7 +80,7 @@ func SetCookie(r *http.Request, name, value string) {
 	if len(cookies) > 0 {
 		r.Header.Set("Cookie", strings.Join(cookies, ";"))
 	}
-    return
+	return
 }
 
 // DelCookie deletes the cookies associated with the given name from the
