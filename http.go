@@ -57,6 +57,32 @@ func GetCookie(r *http.Request, name string) string {
 	return ""
 }
 
+// SetCookie sets the named cookie to value. If the named cookie is
+// not found, adds the new one.
+func SetCookie(r *http.Request, name, value string) {
+	var (
+		cookies []string
+		found   bool
+	)
+
+	for _, cookie := range r.Cookies() {
+		if cookie.Name == name {
+			cookie.Value = value
+			found = true
+		}
+		cookies = append(cookies, cookie.String())
+	}
+
+	if !found {
+		cookies = append(cookies, (&http.Cookie{Name: name, Value: value}).String())
+	}
+
+	if len(cookies) > 0 {
+		r.Header.Set("Cookie", strings.Join(cookies, ";"))
+	}
+    return
+}
+
 // DelCookie deletes the cookies associated with the given name from the
 // HTTP request's Cookie header.
 func DelCookie(r *http.Request, name string) {

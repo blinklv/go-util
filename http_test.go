@@ -55,6 +55,27 @@ func TestGetClientIP(t *testing.T) {
 	}
 }
 
+func TestSetCookie(t *testing.T) {
+	for _, cs := range []struct {
+		OldCookie string `yaml:"old_cookie"`
+		Key       string `yaml:"key"`
+		Value     string `yaml:"value"`
+		NewCookie string `yaml:"new_cookie"`
+	}{
+		{"", "a", "b", "a=b"},
+		{"foo=bar;hello=world", "what", "are", "foo=bar;hello=world;what=are"},
+		{"foo=bar;hello=world;what=are", "foo", "foo", "foo=foo;hello=world;what=are"},
+		{"foo=bar;hello=world;what=are", "hello", "a", "foo=bar;hello=a;what=are"},
+		{"foo=bar;hello=world;what=are", "what", "you", "foo=bar;hello=world;what=you"},
+		{"foo=bar;a=b;hello=world;a=b;what=are", "a", "haha", "foo=bar;a=haha;hello=world;a=haha;what=are"},
+	} {
+		r := &http.Request{Header: make(http.Header)}
+		r.Header.Set("Cookie", cs.OldCookie)
+		SetCookie(r, cs.Key, cs.Value)
+		assert.Equal(t, cs.NewCookie, r.Header.Get("Cookie"))
+	}
+}
+
 func TestDelCookie(t *testing.T) {
 	for _, cs := range []struct {
 		OldCookie string `yaml:"old_cookie"`
